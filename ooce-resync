@@ -1,0 +1,21 @@
+#!/bin/ksh
+
+dir="${1:?dir}"
+
+[ ! -d $dir/patches ] && echo "No target dir" && exit 1
+
+branch=`git symbolic-ref --short HEAD`
+tag=${branch#illumos-}
+
+rm -f $dir/patches/00*.patch $dir/patches/series
+git format-patch $tag..
+rm -f 00*ooce-config*.patch
+for f in 00*.patch; do
+	sed < $f > $dir/patches/$f '
+		/^Subject:/s^\[PATCH[^]]*\] *^^
+		/^-- /,$d
+	'
+	rm -f $f
+done
+ls -1 $dir/patches/ | egrep '^00' > $dir/patches/series
+
