@@ -631,7 +631,8 @@ elif targetos == 'darwin'
 elif targetos == 'sunos'
   socket = [cc.find_library('socket'),
             cc.find_library('nsl'),
-            cc.find_library('resolv')]
+            cc.find_library('resolv'),
+            cc.find_library('dlpi')]
 elif targetos == 'haiku'
   socket = [cc.find_library('posix_error_mapper'),
             cc.find_library('network'),
