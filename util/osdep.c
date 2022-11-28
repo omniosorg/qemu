@@ -31,6 +31,8 @@
 #include "qemu/hw-version.h"
 #include "monitor/monitor.h"
 
+#undef F_OFD_SETLK
+
 static const char *hw_version = QEMU_HW_VERSION;
 
 int socket_set_cork(int fd, int v)
