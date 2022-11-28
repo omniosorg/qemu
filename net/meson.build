@@ -50,7 +50,7 @@ elif host_os == 'linux'
 elif host_os in bsd_oses
   system_ss.add(files('tap.c', 'tap-bsd.c'))
 elif host_os == 'sunos'
-  system_ss.add(files('tap.c', 'tap-solaris.c'))
+  system_ss.add(files('tap.c', 'tap-solaris.c', 'vnic.c'))
 else
   system_ss.add(files('tap.c', 'tap-stub.c'))
 endif

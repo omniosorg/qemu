@@ -58,6 +58,8 @@ int net_init_l2tpv3(const Netdev *netdev, const char *name,
 int net_init_vde(const Netdev *netdev, const char *name,
                  NetClientState *peer, Error **errp);
 #endif
+int net_init_vnic(const Netdev *netdev, const char *name,
+                 NetClientState *peer, Error **errp);
 
 #ifdef CONFIG_NETMAP
 int net_init_netmap(const Netdev *netdev, const char *name,

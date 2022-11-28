@@ -365,6 +365,17 @@
     '*mode':  'uint16' } }
 
 ##
+# @NetdevVNICOptions:
+#
+# Connect to a VNIC on the host.
+#
+# @ifname: VNIC interface name
+##
+{ 'struct': 'NetdevVNICOptions',
+  'data': {
+    'ifname':	'str' } }
+
+##
 # @NetdevBridgeOptions:
 #
 # Connect a host TAP network interface to a host bridge device.
@@ -716,7 +727,7 @@
 { 'enum': 'NetClientDriver',
   'data': [ 'none', 'nic', 'user', 'tap', 'l2tpv3', 'socket', 'stream',
             'dgram', 'vde', 'bridge', 'hubport', 'netmap', 'vhost-user',
-            'vhost-vdpa',
+            'vhost-vdpa', 'vnic',
             { 'name': 'af-xdp', 'if': 'CONFIG_AF_XDP' },
             { 'name': 'vmnet-host', 'if': 'CONFIG_VMNET' },
             { 'name': 'vmnet-shared', 'if': 'CONFIG_VMNET' },
@@ -745,6 +756,7 @@
     'stream':   'NetdevStreamOptions',
     'dgram':    'NetdevDgramOptions',
     'vde':      'NetdevVdeOptions',
+    'vnic':     'NetdevVNICOptions',
     'bridge':   'NetdevBridgeOptions',
     'hubport':  'NetdevHubPortOptions',
     'netmap':   'NetdevNetmapOptions',

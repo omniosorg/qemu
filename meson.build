@@ -698,7 +698,8 @@ elif host_os == 'darwin'
 elif host_os == 'sunos'
   socket = [cc.find_library('socket'),
             cc.find_library('nsl'),
-            cc.find_library('resolv')]
+            cc.find_library('resolv'),
+            cc.find_library('dlpi')]
 elif host_os == 'haiku'
   socket = [cc.find_library('posix_error_mapper'),
             cc.find_library('network'),
