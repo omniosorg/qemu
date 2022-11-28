@@ -1,0 +1,49 @@
+#!/bin/ksh
+
+# Script for doing iterative test builds
+
+PREFIX=/opt/ooce
+ISAPART64=amd64
+PATH+=:/opt/gcc-12/bin
+export PATH
+export CC="gcc"
+export CXX="g++"
+export CFLAGS="\
+	-m64 -gdwarf-2 -gstrict-dwarf \
+	-fno-omit-frame-pointer \
+	-fno-aggressive-loop-optimizations \
+"
+export LDFLAGS="-lumem"
+export MAKE=gmake
+export SHELL=/bin/bash
+
+TASN=4.19.0
+
+[ -f libtasn1-$TASN.tar.gz ] || \
+	curl -LO https://mirrors.omnios.org/qemu/libtasn1/libtasn1-$TASN.tar.gz
+[ -d libtasn1-$TASN ] || gtar xf libtasn1-$TASN.tar.gz
+DEPROOT=$PWD/libtasn1-$TASN/out
+if [ ! -f $DEPROOT/lib/libtasn1.a ]; then
+	{
+		cd libtasn1-$TASN
+		./configure --disable-shared --enable-static
+		gmake -j30
+		mkdir -p out
+		gmake install prefix=/ DESTDIR=$PWD/out
+	}
+fi
+
+PKG_CONFIG_PATH=$PREFIX/lib/$ISAPART64/pkgconfig
+PKG_CONFIG_PATH+=:$DEPROOT/lib/pkgconfig
+CFLAGS+=" -I$DEPROOT/include"
+LDFLAGS+=" -L$DEPROOT/lib"
+export PKG_CONFIG_PATH CFLAGS LDFLAGS
+
+$SHELL ./configure \
+    --prefix=$PREFIX/qemu --sysconfdir=/etc$PREFIX/qemu \
+    --includedir=$PREFIX/qemu/include --bindir=$PREFIX/qemu/bin \
+    --sbindir=$PREFIX/qemu/sbin --libdir=$PREFIX/qemu/lib/amd64 \
+    --libexecdir=$PREFIX/qemu/libexec/amd64 \
+    --localstatedir=/var$PREFIX/qemu
+
+
