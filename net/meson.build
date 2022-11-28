@@ -37,6 +37,7 @@ endif
 softmmu_ss.add(when: 'CONFIG_LINUX', if_true: files('tap-linux.c'))
 softmmu_ss.add(when: 'CONFIG_BSD', if_true: files('tap-bsd.c'))
 softmmu_ss.add(when: 'CONFIG_SOLARIS', if_true: files('tap-solaris.c'))
+softmmu_ss.add(when: 'CONFIG_SOLARIS', if_true: files('vnic.c'))
 tap_posix = ['tap.c']
 if not config_host.has_key('CONFIG_LINUX') and not config_host.has_key('CONFIG_BSD') and not config_host.has_key('CONFIG_SOLARIS')
   tap_posix += 'tap-stub.c'
