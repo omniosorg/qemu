@@ -20,8 +20,6 @@ if not enable_modules
   elif host_os == 'windows' and meson.get_compiler('c').get_id() == 'clang'
     # LLVM/lld does not support exporting specific symbols. However, it works
     # out of the box with dllexport/dllimport attribute we set in the code.
-  else
-    emulator_link_args += ['-Xlinker', '--dynamic-list=' + qemu_plugin_symbols.full_path()]
   endif
 endif
 
