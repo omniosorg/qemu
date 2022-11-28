@@ -1,0 +1,72 @@
+#!/bin/ksh
+
+# Script for doing iterative test builds
+
+PREFIX=/opt/ooce
+ISAPART64=amd64
+PATH+=:/opt/gcc-12/bin
+export PATH
+export CC="gcc"
+export CXX="g++"
+export CFLAGS="\
+	-m64 -gdwarf-2 -gstrict-dwarf \
+	-fno-omit-frame-pointer \
+	-fno-aggressive-loop-optimizations \
+"
+export LDFLAGS="-lumem"
+export MAKE=gmake
+export SHELL=/bin/bash
+
+mirror=https://mirrors.omnios.org/qemu
+
+DEPROOT=$PWD/_dep
+mkdir -p $DEPROOT
+
+SLIRP=4.7.0
+TASN=4.19.0
+
+if [ ! -f $DEPROOT/lib/libslirp.a ]; then
+	[ -f libslirp-$SLIRP.tar.bz2 ] || \
+	    curl -LO $mirror/libslirp/libslirp-v$SLIRP.tar.bz2
+	rm -rf libslirp-v$SLIRP
+	gtar xf libslirp-v$SLIRP.tar.bz2 || exit 1
+	(
+		cd libslirp-v$SLIRP
+		mkdir build
+		LDFLAGS=-lsocket /usr/lib/python3.11/bin/meson setup \
+		    -Ddefault_library=static --prefer-static \
+		    --prefix=/ --libdir=/lib --includedir=/include \
+		    build
+		cd build
+		DESTDIR=$DEPROOT /opt/ooce/bin/ninja install
+	)
+fi
+
+if [ ! -f $DEPROOT/lib/libtasn1.a ]; then
+	[ -f libtasn1-$TASN.tar.gz ] || \
+	    curl -LO $mirror/libtasn1/libtasn1-$TASN.tar.gz
+	rm -rf libtasn1-$TASN
+	gtar xf libtasn1-$TASN.tar.gz
+	(
+		cd libtasn1-$TASN
+		./configure --disable-shared --enable-static
+		$MAKE -j30
+		mkdir -p out
+		$MAKE install prefix=/ DESTDIR=$DEPROOT
+	)
+fi
+
+PKG_CONFIG_PATH=$PREFIX/lib/$ISAPART64/pkgconfig
+PKG_CONFIG_PATH+=:$DEPROOT/lib/pkgconfig
+CFLAGS+=" -I$DEPROOT/include -I$DEPROOT/include/slirp"
+LDFLAGS+=" -L$DEPROOT/lib"
+export PKG_CONFIG_PATH CFLAGS LDFLAGS
+
+$SHELL ./configure \
+    --prefix=$PREFIX/qemu --sysconfdir=/etc$PREFIX/qemu \
+    --includedir=$PREFIX/qemu/include --bindir=$PREFIX/qemu/bin \
+    --sbindir=$PREFIX/qemu/sbin --libdir=$PREFIX/qemu/lib/amd64 \
+    --libexecdir=$PREFIX/qemu/libexec/amd64 \
+    --localstatedir=/var$PREFIX/qemu
+
+
