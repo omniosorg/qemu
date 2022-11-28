@@ -292,6 +292,10 @@ void qemu_coroutine_delete(Coroutine *co_)
  * return in thread B, and so we might be in a different thread
  * context each time round the loop.
  */
+
+#define SIGJMP2UCONTEXT(x)      \
+            ((ucontext_t *)P2ROUNDUP((uintptr_t)(x),  sizeof (upad128_t)))
+
 CoroutineAction __attribute__((noinline))
 qemu_coroutine_switch(Coroutine *from_, Coroutine *to_,
                       CoroutineAction action)
@@ -305,6 +309,11 @@ qemu_coroutine_switch(Coroutine *from_, Coroutine *to_,
 
     ret = sigsetjmp(from->env, 0);
     if (ret == 0) {
+	ucontext_t *f = SIGJMP2UCONTEXT(from->env);
+	ucontext_t *t = SIGJMP2UCONTEXT(to->env);
+
+        t->uc_mcontext.gregs[REG_FSBASE] = f->uc_mcontext.gregs[REG_FSBASE];
+
         start_switch_fiber_asan(action, &fake_stack_save, to->stack,
                                 to->stack_size);
         start_switch_fiber_tsan(&fake_stack_save,
