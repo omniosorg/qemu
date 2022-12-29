@@ -1883,7 +1883,7 @@ probe_target_compiler() {
   # bother enabling an appropriate guest. This avoids building
   # extraneous firmware images and tests.
   if test "${target_list#*$1}" != "$1"; then
-      break;
+      :
   else
       return 1
   fi
