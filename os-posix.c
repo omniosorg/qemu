@@ -29,6 +29,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <libgen.h>
+#include <priv.h>
 
 #include "qemu/error-report.h"
 #include "qemu/log.h"
@@ -278,6 +279,45 @@ void os_setup_limits(void)
     }
 }
 
+/*
+ * In case qemu is started as root, drop unnecessary privileges.
+ */
+static void
+illumos_drop_privileges(void)
+{
+	priv_set_t *privs, *wantedprivs;
+
+	privs = priv_allocset();
+	wantedprivs = priv_allocset();
+
+	if (privs == NULL || wantedprivs == NULL) {
+		error_report("Unable to allocate privilege sets");
+		exit(1);
+	}
+
+	if (getppriv(PRIV_PERMITTED, privs) != 0) {
+		error_report("Failed to retrieve current privileges");
+		exit(1);
+	}
+
+	priv_basicset(wantedprivs);
+	priv_delset(wantedprivs, PRIV_FILE_LINK_ANY);
+	priv_delset(wantedprivs, PRIV_PROC_INFO);
+	priv_delset(wantedprivs, PRIV_PROC_SESSION);
+	priv_addset(wantedprivs, PRIV_NET_RAWACCESS); /* VNIC net backend */
+	priv_intersect(wantedprivs, privs);
+
+	if (setppriv(PRIV_SET, PRIV_PERMITTED, privs) != 0 ||
+	    setppriv(PRIV_SET, PRIV_INHERITABLE, privs) != 0 ||
+	    setppriv(PRIV_SET, PRIV_LIMIT, privs) != 0) {
+		error_report("Failed to reduce privileges");
+		exit(1);
+	}
+
+	priv_freeset(wantedprivs);
+	priv_freeset(privs);
+}
+
 void os_setup_post(void)
 {
     int fd = 0;
@@ -295,6 +335,7 @@ void os_setup_post(void)
 
     change_root();
     change_process_uid();
+    illumos_drop_privileges();
 
     if (daemonize) {
         uint8_t status = 0;
