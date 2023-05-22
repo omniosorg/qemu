@@ -521,6 +521,10 @@ void qemu_anon_ram_free(void *ptr, size_t size);
 #endif
 #endif
 
+#ifdef __illumos__
+#define	HAVE_CHARDEV_ZCONSOLE 1
+#endif
+
 #if defined(__HAIKU__)
 #define SIGIO SIGPOLL
 #endif
