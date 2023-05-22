@@ -496,6 +496,8 @@
 #
 # @parallel: parallel host device
 #
+# @zconsole: illumos zone console character device
+#
 # @pipe: pipes (since 1.5)
 #
 # @socket: stream socket
@@ -546,6 +548,7 @@
   'data': [ 'file',
             { 'name': 'serial', 'if': 'HAVE_CHARDEV_SERIAL' },
             { 'name': 'parallel', 'if': 'HAVE_CHARDEV_PARALLEL' },
+            'zconsole',
             'pipe',
             'socket',
             'udp',
@@ -738,6 +741,7 @@
                         'if': 'HAVE_CHARDEV_SERIAL' },
             'parallel': { 'type': 'ChardevHostdevWrapper',
                           'if': 'HAVE_CHARDEV_PARALLEL' },
+            'zconsole': 'ChardevHostdevWrapper',
             'pipe': 'ChardevHostdevWrapper',
             'socket': 'ChardevSocketWrapper',
             'udp': 'ChardevUdpWrapper',
