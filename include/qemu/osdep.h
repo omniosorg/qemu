@@ -530,6 +530,10 @@ int qemu_shm_alloc(size_t size, Error **errp);
 #endif
 #endif
 
+#ifdef __illumos__
+#define	HAVE_CHARDEV_ZCONSOLE 1
+#endif
+
 #if defined(__HAIKU__)
 #define SIGIO SIGPOLL
 #endif
