@@ -26,6 +26,12 @@ else
     ), util)
 endif
 
+if host_os == 'sunos'
+  chardev_ss.add(files(
+    'char-zconsole.c',
+  ))
+endif
+
 chardev_ss = chardev_ss.apply({})
 
 system_ss.add(files(

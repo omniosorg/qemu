@@ -241,6 +241,7 @@ OBJECT_DECLARE_TYPE(Chardev, ChardevClass, CHARDEV)
 #define TYPE_CHARDEV_PARALLEL "chardev-parallel"
 #define TYPE_CHARDEV_FILE "chardev-file"
 #define TYPE_CHARDEV_SERIAL "chardev-serial"
+#define TYPE_CHARDEV_ZCONSOLE "chardev-zconsole"
 #define TYPE_CHARDEV_SOCKET "chardev-socket"
 #define TYPE_CHARDEV_UDP "chardev-udp"
 
