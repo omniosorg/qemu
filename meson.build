@@ -2848,6 +2848,8 @@ if targetos == 'darwin'
   config_targetos += {'CONFIG_DARWIN': 'y'}
 elif targetos == 'linux'
   config_targetos += {'CONFIG_LINUX': 'y'}
+elif targetos == 'sunos'
+  config_targetos += {'CONFIG_SOLARIS': 'y'}
 endif
 if targetos in bsd_oses
   config_targetos += {'CONFIG_BSD': 'y'}
