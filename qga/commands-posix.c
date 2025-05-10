@@ -50,6 +50,10 @@
 #endif
 #endif
 
+#ifdef __illumos__
+#include <sys/loadavg.h>
+#endif
+
 static bool ga_wait_child(pid_t pid, int *status, Error **errp)
 {
     pid_t rpid;
