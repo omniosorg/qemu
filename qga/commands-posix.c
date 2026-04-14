@@ -1323,7 +1323,7 @@ GuestOSInfo *qmp_guest_get_osinfo(Error **errp)
 
     info = g_new0(GuestOSInfo, 1);
     #ifdef __illumos__
-    if (uname(&kinfo) < 0) {
+    if (uname(&kinfo) == -1) {
     #else
     if (uname(&kinfo) != 0) {
     #endif
