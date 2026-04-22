@@ -1322,8 +1322,11 @@ GuestOSInfo *qmp_guest_get_osinfo(Error **errp)
     const char *qga_os_release = g_getenv("QGA_OS_RELEASE");
 
     info = g_new0(GuestOSInfo, 1);
-
+    #ifdef __illumos__
+    if (uname(&kinfo) == -1) {
+    #else
     if (uname(&kinfo) != 0) {
+    #endif
         error_setg_errno(errp, errno, "uname failed");
     } else {
         info->kernel_version = g_strdup(kinfo.version);
