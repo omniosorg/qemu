@@ -487,10 +487,14 @@
 # Connect to a VNIC on the host.
 #
 # @ifname: VNIC interface name
+#
+# @queues: number of queues to be created for multiqueue capable VNICs
+#     (default: 1)
 ##
 { 'struct': 'NetdevVNICOptions',
   'data': {
-    'ifname':	'str' } }
+    'ifname':	'str',
+    '*queues':	'int' } }
 
 ##
 # @NetdevBridgeOptions:
