@@ -52,6 +52,7 @@
 
 #ifdef __illumos__
 #include <sys/loadavg.h>
+#include <sys/systeminfo.h>
 #if defined(__x86_64__) || defined(__i386__)
 #include <sys/sysi86.h>
 #endif
@@ -1402,7 +1403,21 @@ GuestOSInfo *qmp_guest_get_osinfo(Error **errp)
     } else {
         info->kernel_version = g_strdup(kinfo.version);
         info->kernel_release = g_strdup(kinfo.release);
+#ifdef __illumos__
+        /*
+         * The machine name from uname(2) is the platform (e.g. i86pc) rather
+         * than the architecture; report the kernel architecture instead.
+         */
+        char arch[SYS_NMLN];
+
+        if (sysinfo(SI_ARCHITECTURE_K, arch, sizeof(arch)) != -1) {
+            info->machine = g_strdup(arch);
+        } else {
+            info->machine = g_strdup(kinfo.machine);
+        }
+#else
         info->machine = g_strdup(kinfo.machine);
+#endif
     }
 
     if (qga_os_release != NULL) {
