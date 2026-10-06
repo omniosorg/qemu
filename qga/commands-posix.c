@@ -1068,7 +1068,17 @@ bool guest_get_hw_addr(struct ifaddrs *ifa, unsigned char *buf,
     *obtained = false;
 
     /* we haven't obtained HW address yet */
+#ifdef __illumos__
+    /*
+     * The interface is looked up in the address family of the socket, so
+     * use one that matches in case this is an IPv6-only interface.
+     */
+    sock = socket(ifa->ifa_addr != NULL &&
+                  ifa->ifa_addr->sa_family == AF_INET6 ? PF_INET6 : PF_INET,
+                  SOCK_STREAM, 0);
+#else
     sock = socket(PF_INET, SOCK_STREAM, 0);
+#endif
     if (sock == -1) {
         error_setg_errno(errp, errno, "failed to create socket");
         return false;
