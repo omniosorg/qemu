@@ -47,7 +47,11 @@
 #else /* CONFIG_BSD */
 #define QGA_VIRTIO_PATH_DEFAULT "/dev/virtio-ports/org.qemu.guest_agent.0"
 #endif /* CONFIG_BSD */
+#ifdef __illumos__
+#define QGA_SERIAL_PATH_DEFAULT "/dev/term/b"
+#else
 #define QGA_SERIAL_PATH_DEFAULT "/dev/ttyS0"
+#endif
 #define QGA_STATE_RELATIVE_DIR  "run"
 #else
 #define QGA_VIRTIO_PATH_DEFAULT "\\\\.\\Global\\org.qemu.guest_agent.0"
